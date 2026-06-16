@@ -1,0 +1,11 @@
+{
+  "name": "listloop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Symbol Spin: auto-rotate the active TradingView chart through your watchlist on a configurable interval. Custom intervals, layout preservation, keyboard-driven symbol change, manual list override, zero network. Personal use, Manifest V3.",
+  "type": "module",
+  "scripts": {
+    "lint": "node --check src/background/index.js && node --check src/content/index.js && node --check src/popup/popup.js && node --check src/options/options.js && node --check src/shared/constants.js && node --check src/shared/messaging.js",
+    "check": "npm run lint"
+  }
+}

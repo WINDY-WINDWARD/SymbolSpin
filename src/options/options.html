@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Symbol Spin — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__head">
+        <h1>Symbol Spin — Settings</h1>
+        <p class="page__sub">Personal build. No telemetry, no accounts.</p>
+      </header>
+
+      <form id="settings-form" class="form">
+        <label class="field">
+          <span class="field__label">Default interval (seconds)</span>
+          <input
+            id="interval"
+            name="interval"
+            class="input"
+            type="number"
+            min="1"
+            max="3600"
+            step="1"
+            required
+          />
+          <small class="field__hint">1–3600. Applied on next Start.</small>
+        </label>
+
+        <label class="field">
+          <span class="field__label">TradingView chart base URL</span>
+          <input
+            id="baseUrl"
+            name="baseUrl"
+            class="input"
+            type="url"
+            required
+          />
+          <small class="field__hint">
+            The URL prepended before <code>?symbol=…</code>. The default opens the
+            standard chart page.
+          </small>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn btn--primary">Save</button>
+          <span id="status" class="status" role="status"></span>
+        </div>
+      </form>
+
+      <section class="about">
+        <h2>About</h2>
+        <ul>
+          <li>Manifest V3, zero network calls.</li>
+          <li>All state lives in <code>chrome.storage</code> on this device.</li>
+          <li>Layout (timeframe, indicators, drawings) is preserved across rotations.</li>
+        </ul>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Symbol Spin</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="popup__head">
+        <h1 class="popup__title">Symbol Spin</h1>
+        <span class="popup__version" id="version">v0.2.5</span>
+      </header>
+
+      <section class="status" aria-live="polite">
+        <div class="status__row">
+          <span class="status__label">State</span>
+          <span class="status__value" id="state-value">idle</span>
+        </div>
+        <div class="status__row">
+          <span class="status__label">Source</span>
+          <span class="status__value" id="source-value">—</span>
+        </div>
+        <div class="status__row">
+          <span class="status__label">Ticker</span>
+          <span class="status__value" id="ticker-value">—</span>
+        </div>
+        <div class="status__row">
+          <span class="status__label">Position</span>
+          <span class="status__value" id="position-value">0 / 0</span>
+        </div>
+        <div class="status__row">
+          <span class="status__label">Next in</span>
+          <span class="status__value" id="next-value">—</span>
+        </div>
+        <div class="progress" aria-hidden="true">
+          <div class="progress__bar" id="progress-bar"></div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <button id="primary-btn" class="btn btn--primary" type="button">
+          Start
+        </button>
+        <button id="next-btn" class="btn" type="button" disabled>Next ›</button>
+        <button id="rescan-btn" class="btn btn--ghost" type="button">
+          Rescan
+        </button>
+      </section>
+
+      <section class="interval">
+        <label class="interval__label" for="interval-select">Interval</label>
+        <div class="interval__row">
+          <select id="interval-select" class="select">
+            <option value="5000">5s</option>
+            <option value="10000">10s</option>
+            <option value="30000">30s</option>
+            <option value="60000">60s</option>
+            <option value="custom">Custom…</option>
+          </select>
+          <input
+            id="interval-custom"
+            class="input"
+            type="number"
+            min="1"
+            max="3600"
+            step="1"
+            placeholder="sec"
+            hidden
+          />
+        </div>
+      </section>
+
+      <details class="manual">
+        <summary class="manual__summary">Manual ticker list</summary>
+        <div class="manual__body">
+          <label class="manual__toggle">
+            <input id="manual-toggle" type="checkbox" />
+            <span>Use manual list instead of scraped watchlist</span>
+          </label>
+          <textarea
+            id="manual-list"
+            class="manual__textarea"
+            rows="3"
+            placeholder="NASDAQ:AAPL, BINANCE:BTCUSDT, AAPL, TSLA"
+          ></textarea>
+          <small class="manual__hint">
+            Comma- or newline-separated. Bare tickers get a generic
+            <code>X:</code> prefix.
+          </small>
+          <div class="manual__actions">
+            <button id="manual-save" class="btn btn--ghost" type="button">
+              Save list
+            </button>
+            <span id="manual-status" class="manual__status"></span>
+          </div>
+        </div>
+      </details>
+
+      <section class="messages" id="messages" role="status"></section>
+
+      <details class="diag">
+        <summary class="diag__summary">Debug</summary>
+        <div class="diag__body" id="diag-body">…</div>
+      </details>
+
+      <footer class="popup__foot">
+        <a id="open-tv" class="link" href="#" target="_blank" rel="noreferrer">
+          Open TradingView
+        </a>
+        <a id="open-options" class="link" href="#" target="_blank" rel="noreferrer">
+          Settings
+        </a>
+      </footer>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

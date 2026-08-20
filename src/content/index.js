@@ -418,7 +418,11 @@ function stopTimer() {
   }
 }
 
+let currentBackoffMs = 5000;
+let interactionThrottle = null;
+
 function scheduleNextTick() {
+  currentBackoffMs = 5000;
   state.nextTickAt = Date.now() + state.intervalMs;
   state.timerId = window.setTimeout(() => {
     state.timerId = null;
@@ -430,9 +434,16 @@ function scheduleNextTick() {
 
 function advance(delta) {
   if (!state.watchlist.length) {
+    for (let i = 0; i < delta; i++) {
+      dispatchArrowDown();
+    }
     safeSend({
-      type: MSG.ROTATION_ERROR,
-      payload: { error: "empty_watchlist" },
+      type: MSG.ROTATION_TICK,
+      payload: {
+        index: state.currentIndex,
+        ticker: null,
+        remainingMs: state.intervalMs,
+      },
     });
     return;
   }
@@ -450,6 +461,33 @@ function advance(delta) {
     },
   });
 }
+
+function handleUserInteraction() {
+  if (!state.running) return;
+  if (interactionThrottle) return;
+  interactionThrottle = setTimeout(() => { interactionThrottle = null; }, 500);
+
+  const now = Date.now();
+  const remaining = state.nextTickAt - now;
+
+  if (remaining < currentBackoffMs) {
+    state.nextTickAt = now + currentBackoffMs;
+    currentBackoffMs = Math.min(currentBackoffMs + 5000, 10000);
+
+    if (state.timerId) {
+      clearTimeout(state.timerId);
+      state.timerId = window.setTimeout(() => {
+        state.timerId = null;
+        if (!state.running) return;
+        advance(1);
+        if (state.running) scheduleNextTick();
+      }, state.nextTickAt - now);
+    }
+  }
+}
+
+window.addEventListener("mousemove", handleUserInteraction, { passive: true });
+window.addEventListener("keydown", handleUserInteraction, { passive: true });
 
 // ---------------------------------------------------------------------------
 // Active watchlist resolution: manual list > DOM scrape
@@ -636,14 +674,12 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         const next = resolveActiveList();
         state.watchlist = next;
         state.userNavigated = false;
-        if (!next.length) {
-          sendResponse({ ok: false, error: "empty_watchlist" });
-          return;
-        }
         state.running = true;
         startTimer();
-        // Jump immediately to the current symbol (in case of resume).
-        changeSymbol(state.watchlist[state.currentIndex]);
+        // Jump immediately to the current symbol if we have a watchlist.
+        if (state.watchlist.length) {
+          changeSymbol(state.watchlist[state.currentIndex]);
+        }
         sendResponse({ ok: true });
         break;
       }
@@ -654,10 +690,6 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         break;
       }
       case MSG.RESUME_ROTATION: {
-        if (!state.watchlist.length) {
-          sendResponse({ ok: false, error: "empty_watchlist" });
-          return;
-        }
         state.userNavigated = false;
         state.running = true;
         startTimer();
@@ -671,10 +703,6 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         break;
       }
       case MSG.NEXT_TICKER: {
-        if (!state.watchlist.length) {
-          sendResponse({ ok: false, error: "empty_watchlist" });
-          return;
-        }
         advance(1);
         if (state.running) scheduleNextTick();
         sendResponse({ ok: true });

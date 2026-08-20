@@ -155,7 +155,7 @@ function render() {
   }
 
   els.primary.textContent = labelForPrimary(session.state);
-  els.nextBtn.disabled = session.state === "idle" || total === 0;
+  els.nextBtn.disabled = session.state === "idle";
 
   if (session.lastError) {
     els.messages.textContent = messageForError(session.lastError);

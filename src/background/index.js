@@ -166,14 +166,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
             return;
           }
           const resp = await sendTabMessage(tab.id, { type: MSG.FORCE_RESCAN });
-          if (!resp || !resp.watchlist || !resp.watchlist.length) {
-            await setSession({ state: "idle", lastError: "no_watchlist" });
-            await broadcastStatus();
-            sendResponse({ ok: false, error: "no_watchlist" });
-            return;
-          }
           await setSession({
-            watchlist: resp.watchlist,
+            watchlist: (resp && resp.watchlist) ? resp.watchlist : [],
             currentIndex: 0,
             state: "running",
             lastError: null,
